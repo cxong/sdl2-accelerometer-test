@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	SDL_Renderer *renderer = NULL;
 
 	// Init SDL
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
 	{
 		printf("SDL_Init error: %s\n", SDL_GetError());
 		goto bail;
@@ -34,9 +34,14 @@ int main(int argc, char *argv[])
 		printf("No joystics detected");
 		goto bail;
 	}
-	SDL_GameController *gc = SDL_GameControllerOpen(0);
-	SDL_Joystick *j = SDL_GameControllerGetJoystick(gc);
-	printf("Joystick 0 has %d axes\n", SDL_JoystickNumAxes(j));
+	SDL_Joystick *j = SDL_JoystickOpen(0);
+	const int numAxes = SDL_JoystickNumAxes(j);
+	if (numAxes < 0)
+	{
+		printf("Cannot get joystick axes: %s\n", SDL_GetError());
+		goto bail;
+	}
+	printf("Joystick 0 has %d axes\n", numAxes);
 
 	// Create display window
 	window = SDL_CreateWindow(
